@@ -1,8 +1,12 @@
+#!/usr/bin/env perl
+
 use strict;
 use warnings;
-
+use lib 'lib';
 use Catalyst::DotCloud;
+use Plack::Builder;
 
-my $app = Catalyst::DotCloud->apply_default_middlewares(Catalyst::DotCloud->psgi_app);
-$app;
-
+builder {
+    enable 'Plack::Middleware::BufferedStreaming';
+    Catalyst::DotCloud->psgi_app(@_);
+};
