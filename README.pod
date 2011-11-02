@@ -1,1 +1,22 @@
-Run script/catalyst_dotcloud_server.pl to test the application.
+=pod
+
+=head1 Catalyst 5.9 on dotCloud
+
+This is an example of what's needed to run Catalyst 5.9 on L<dotCloud|https://www.dotcloud.com/>. It's just the skeleton app created
+by F<catalyst.pl>
+
+The interesting parts are in these files:
+
+=over
+
+=item * F<.dotcloudignore>
+
+=item * F<app.psgi>
+
+=item * F<dotcloud.yml>
+
+=item * F<nginx.conf>
+
+=back
+
+=cut
