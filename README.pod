@@ -2,7 +2,7 @@
 
 =head1 Catalyst 5.9 on dotCloud
 
-This is an example of what's needed to run Catalyst 5.9 on L<dotCloud|https://www.dotcloud.com/>. It's just the skeleton app created
+This is an example of what's needed to run Catalyst 5.9 on L<< dotCloud|https://www.dotcloud.com/ >>. It's just the skeleton app created
 by F<catalyst.pl>
 
 The interesting parts are in these files:
@@ -18,5 +18,60 @@ The interesting parts are in these files:
 =item * F<nginx.conf>
 
 =back
+
+=head2 F<.dotcloudignore>
+
+The file looks like this:
+
+    - /t
+    - /script
+
+No need to sync test to production environment. And no need to sync scripts, we'll be using L<PSGI>
+
+=head2 F<app.psgi>
+
+The file looks like this:
+
+    #!/usr/bin/env perl
+
+    use strict;
+    use warnings;
+    use lib 'lib';
+    use Catalyst::DotCloud;
+    use Plack::Builder;
+
+    builder {
+        enable 'Plack::Middleware::BufferedStreaming';
+        Catalyst::DotCloud->psgi_app(@_);
+    };
+
+The only thing to notice here, is that we're enabling L<Plack::Middleware::BufferedStreaming>, to to get around
+incompatabilities between L<Catalyst> 5.9 and L<< uWSGI|http://projects.unbit.it/uwsgi/ >>.
+
+=head2 F<dotcloud.yml>
+
+The file looks like this:
+
+    ---
+    www:
+        type: perl
+        requirements:
+            - 'Module::Install::Catalyst'
+            - 'Plack::Builder'
+            - 'Plack::Middleware::BufferedStreaming'
+
+Notice the requirements. L<Module::Install::Catalyst> is needed by F<Makefile.PL>, if it's not there the makefile
+won't run, and the requirements listed there won't be installed. The last two is needed for our F<app.psgi> file.
+
+=head2 F<nginx.conf>
+
+The file looks like this:
+
+    location /static/ {
+        root /home/dotcloud/current/root;
+    }
+
+DotCloud defaults to serving static content from a directory called F<static> in the base directory. This makes
+dotCloud serve static files I<also> from F<root/static>.
 
 =cut
